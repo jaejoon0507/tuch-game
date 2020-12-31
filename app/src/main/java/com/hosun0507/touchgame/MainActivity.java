@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     int point = 0;                // 점수 저장 변수
 
 
+    itn a;
 
     public  void rand(){
         int a;
