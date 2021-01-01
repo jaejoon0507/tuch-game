@@ -1,17 +1,22 @@
 package com.hosun0507.touchgame;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 
 
 
 public class MainActivity extends AppCompatActivity {
+    final Context context = this;
 
     com.hosun0507.touchgame.databinding.ActivityMainBinding activityMainBinding;
 
@@ -35,7 +40,33 @@ public class MainActivity extends AppCompatActivity {
     int point = 0;                // 점수 저장 변수
 
 
-    int a = 1123124141423;
+
+    public void onBackPressed() {
+        AlertDialog.Builder alertDialogbuilder = new AlertDialog.Builder(context);
+        alertDialogbuilder.setTitle("게임 종료");
+        alertDialogbuilder
+                .setMessage("게임을 종료 하시겠습니까?")
+                .setCancelable(false)
+                .setPositiveButton("엉", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(MainActivity.this, introMainActivity.class);
+                        startActivity(intent);
+                        moveTaskToBack(true);
+                        finish();
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                    }
+                })
+                .setNegativeButton("아닝", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogbuilder.create();
+        alertDialog.show();
+    }
 
     public  void rand(){
         int a;
@@ -66,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             timeThread.start();         //thread 실행
             activityMainBinding.startbutton.setText("일시 정지");
 
+
             if(startbutton == 2) {
                 rand();
             }else{
@@ -86,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         button1color();                                 // 버튼 색깔 보이게
+        activityMainBinding.pointview.setText(String.format("%d",point));
 
     }     // 시작 버튼 눌를 때 실행되는 함수
 
@@ -97,9 +130,10 @@ public class MainActivity extends AppCompatActivity {
             int putE = 0;
             int q = 0;
             if (leftvol <= -1) {
+
+                time = time - masg.arg1;    // 남은 시간 카운터
                 activityMainBinding.timeview.setText("남은시간: ");
                 activityMainBinding.timeview.append(String.format("%d", time));    // 화면에 표시
-                time = time - masg.arg1;                                             // 남은 시간 카운터
                 if (time <= 0) {                                                //남은 시간이 없어지면 나오는 기능
                     for (int a = 0; a < 9; a++) {
                         if (textcolor == buttonx[a]) {
@@ -118,11 +152,12 @@ public class MainActivity extends AppCompatActivity {
                     if (q == 0) {
                         rand();
                         button1color();
-                        time = 3;
-                        if(point > 10) {
-                            time = 2;
-                        }else if(point > 20){
-                                time = 1;
+                        time = 4;
+                        if (point > 10) {
+                            time = 3;
+                            if (point > 20) {
+                                time = 2;
+                            }
                         }
                     }
                 }
@@ -158,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 Message masg = new Message();       //초가 저장될 공간생성
                 masg.arg1 = i++;                   //0.001초마다 i의 값 1씩 증가
-                Sec = (masg.arg1 / 100) % 100;    // 1초마다 Sec 값 1씩 증가
+                Sec = (masg.arg1 / 100) % 60;    // 1초마다 Sec 값 1씩 증가
                 if(Sec == 1){
                     masg.arg1 = Sec;
                     i = 0;                       // 1초마 i값 초기화
